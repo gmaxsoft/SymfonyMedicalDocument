@@ -131,23 +131,3 @@ W backendzie bundle **NelmioCorsBundle** pozwala na żądania z `localhost` / `1
 ## Zgodność z RODO / dane osobowe
 
 Fixtures i opisy w kodzie mogą zawierać **dane fikcyjne** wyłącznie do testów. W produkcji stosuj polityki retencji, logowanie dostępu, umowy powierzenia i minimalizację danych zgodnie z prawem.
-
-## Konwencja komunikatów Git
-
-Commity w języku polskim, **w formie bezosobowej i w czasie przeszłym** (opis tego, co zostało zrobione), np.:
-
-| Unikaj (tryb rozkazujący / osobowy) | Używaj |
-|-------------------------------------|--------|
-| Dodaj walidację | **Dodano** walidację |
-| Zmień konfigurację | **Zmieniono** konfigurację |
-| Usuń przestarzały kod | **Usunięto** przestarzały kod |
-
-W repozytorium ustawiono szablon commita (plik `.gitmessage`). Aby Git podpowiadał go przy `git commit` (bez argumentu `-m`), w katalogu projektu wykonaj:
-
-```bash
-git config commit.template .gitmessage
-```
-
----
-
-*Dokument opisuje stan repozytorium w momencie utworzenia pliku; szczegóły implementacji mogą ewoluować w kolejnych commitach.*

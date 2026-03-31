@@ -1,0 +1,8 @@
+# Testy: HMAC bez plików PEM (tylko środowisko test)
+lexik_jwt_authentication:
+    secret_key: 'test_jwt_hmac_secret_32_chars_min!!'
+    public_key: null
+    pass_phrase: ''
+    token_ttl: 3600
+    encoder:
+        signature_algorithm: HS256
