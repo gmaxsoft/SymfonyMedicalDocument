@@ -21,16 +21,26 @@ async function submit() {
 
 <template>
   <div class="login-page">
+    <div
+      class="login-page__glow"
+      aria-hidden="true"
+    />
     <div class="login-page__panel">
       <v-card
-        class="pa-6"
-        elevation="3"
-        rounded="lg"
+        class="pa-6 login-page__card"
+        color="surface"
+        variant="flat"
       >
-        <v-card-title class="text-h5 mb-2">
-          Medical Document System
+        <div class="login-page__logo-row mb-4">
+          <span class="login-page__logo-vue">Vue</span>
+          <span class="login-page__logo-rest">Clinic</span>
+        </div>
+        <v-card-title class="text-h5 mb-1 pa-0">
+          Medical Document
         </v-card-title>
-        <v-card-subtitle>Sign in with your clinic account</v-card-subtitle>
+        <v-card-subtitle class="pa-0 text-medium-emphasis">
+          Sign in with your clinic account
+        </v-card-subtitle>
         <v-card-text>
           <v-form @submit.prevent="submit">
             <v-text-field
@@ -38,8 +48,6 @@ async function submit() {
               label="Email"
               type="email"
               autocomplete="username"
-              variant="outlined"
-              density="comfortable"
               class="mb-2"
             />
             <v-text-field
@@ -47,8 +55,6 @@ async function submit() {
               label="Password"
               type="password"
               autocomplete="current-password"
-              variant="outlined"
-              density="comfortable"
               class="mb-4"
             />
             <v-alert
@@ -78,20 +84,67 @@ async function submit() {
 
 <style scoped>
 .login-page {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
   margin: 0;
   box-sizing: border-box;
-  background-color: #f3f3f3;
+  background: radial-gradient(120% 80% at 50% 0%, #1a2834 0%, #0c0f12 45%, #080a0c 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
 }
 
+.login-page__glow {
+  pointer-events: none;
+  position: absolute;
+  width: 140%;
+  max-width: 900px;
+  aspect-ratio: 1;
+  left: 50%;
+  top: 18%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(66, 185, 131, 0.22) 0%,
+    rgba(53, 73, 94, 0.12) 38%,
+    transparent 68%
+  );
+  filter: blur(2px);
+}
+
 .login-page__panel {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 420px;
 }
+
+.login-page__card {
+  border: 1px solid rgba(66, 185, 131, 0.18);
+  box-shadow:
+    0 0 0 1px rgba(53, 73, 94, 0.35),
+    0 24px 48px rgba(0, 0, 0, 0.45),
+    0 0 80px rgba(66, 185, 131, 0.06);
+}
+
+.login-page__logo-row {
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.login-page__logo-vue {
+  color: #42b983;
+}
+
+.login-page__logo-rest {
+  color: #35495e;
+  margin-left: 2px;
+}
+
 </style>

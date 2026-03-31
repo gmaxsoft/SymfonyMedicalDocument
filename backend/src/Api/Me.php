@@ -29,7 +29,7 @@ class Me
     /** @var list<string> */
     public array $roles = [];
 
-    /** @var array{firstName: string, lastName: string}|null */
+    /** @var array{id: int, firstName: string, lastName: string, birthDate: string|null}|null */
     public ?array $patientProfile = null;
 
     /**
@@ -42,7 +42,7 @@ class Me
     /**
      * Doctor's assigned patients (clinic roster).
      *
-     * @var list<array{firstName: string, lastName: string, patientEmail: string}>
+     * @var list<array{id: int, firstName: string, lastName: string, patientEmail: string, birthDate: string|null}>
      */
     public array $patients = [];
 }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import api from '@/api/client'
 
 const STORAGE_KEY = 'jwt'
@@ -8,6 +8,10 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem(STORAGE_KEY) || '')
   const loading = ref(false)
   const error = ref('')
+  const me = ref(null)
+
+  const isDoctor = computed(() => (me.value?.roles || []).includes('ROLE_DOCTOR'))
+  const isPatient = computed(() => (me.value?.roles || []).includes('ROLE_PATIENT'))
 
   function setToken(value) {
     token.value = value || ''
@@ -16,6 +20,16 @@ export const useAuthStore = defineStore('auth', () => {
     } else {
       localStorage.removeItem(STORAGE_KEY)
     }
+  }
+
+  async function loadMe() {
+    if (!token.value) {
+      me.value = null
+      return null
+    }
+    const { data } = await api.get('/api/me')
+    me.value = data
+    return data
   }
 
   async function login(email, password) {
@@ -27,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('No token in response')
       }
       setToken(data.token)
+      await loadMe()
       return true
     } catch (e) {
       error.value =
@@ -42,12 +57,23 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     setToken('')
+    me.value = null
   }
 
   async function fetchMe() {
-    const { data } = await api.get('/api/me')
-    return data
+    return loadMe()
   }
 
-  return { token, loading, error, login, logout, fetchMe }
+  return {
+    token,
+    loading,
+    error,
+    me,
+    isDoctor,
+    isPatient,
+    login,
+    logout,
+    fetchMe,
+    loadMe,
+  }
 })

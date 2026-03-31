@@ -4,27 +4,55 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Dto\PatientProfileCreateInputDto;
+use App\Dto\PatientProfileUpdateInputDto;
 use App\Repository\PatientProfileRepository;
+use App\State\PatientProfileCreateProcessor;
+use App\State\PatientProfileDeleteProcessor;
+use App\State\PatientProfileUpdateProcessor;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: PatientProfileRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(
-            normalizationContext: ['groups' => ['patient_profile:read']],
+            normalizationContext: ['groups' => ['patient_profile:read'], DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'],
         ),
         new Get(
-            normalizationContext: ['groups' => ['patient_profile:read']],
+            normalizationContext: ['groups' => ['patient_profile:read'], DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'],
             security: "is_granted('ROLE_DOCTOR') and object.isTreatedBy(user) or (is_granted('ROLE_PATIENT') and object.getUser() and object.getUser().getId() == user.getId())",
         ),
+        new Post(
+            input: PatientProfileCreateInputDto::class,
+            processor: PatientProfileCreateProcessor::class,
+            security: "is_granted('ROLE_DOCTOR')",
+            normalizationContext: ['groups' => ['patient_profile:read'], DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'],
+        ),
+        new Patch(
+            input: PatientProfileUpdateInputDto::class,
+            processor: PatientProfileUpdateProcessor::class,
+            security: "is_granted('ROLE_DOCTOR') and object.isTreatedBy(user)",
+            normalizationContext: ['groups' => ['patient_profile:read'], DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'],
+        ),
+        new Delete(
+            security: "is_granted('ROLE_DOCTOR') and object.isTreatedBy(user)",
+            processor: PatientProfileDeleteProcessor::class,
+        ),
     ],
-    normalizationContext: ['groups' => ['patient_profile:read']],
+    normalizationContext: ['groups' => ['patient_profile:read'], DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'],
 )]
 class PatientProfile
 {
@@ -36,6 +64,7 @@ class PatientProfile
 
     #[ORM\OneToOne(inversedBy: 'patientProfile', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ApiProperty(readableLink: false)]
     #[Groups(['patient_profile:read'])]
     private ?User $user = null;
 
@@ -56,6 +85,10 @@ class PatientProfile
     #[ORM\Column(length: 120)]
     #[Groups(['patient_profile:read', 'prescription:read', 'history:read'])]
     private ?string $lastName = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[Groups(['patient_profile:read', 'prescription:read', 'history:read'])]
+    private ?DateTimeImmutable $birthDate = null;
 
     public function __construct()
     {
@@ -139,6 +172,18 @@ class PatientProfile
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getBirthDate(): ?DateTimeImmutable
+    {
+        return $this->birthDate;
+    }
+
+    public function setBirthDate(?DateTimeImmutable $birthDate): static
+    {
+        $this->birthDate = $birthDate;
 
         return $this;
     }

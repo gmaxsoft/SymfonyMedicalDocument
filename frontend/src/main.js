@@ -8,12 +8,32 @@ import 'vuetify/styles'
 
 import App from './App.vue'
 import router from './router'
+import { vueDocumentTheme } from './plugins/vuetify-theme'
 
 const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'vueDocument',
+    themes: {
+      vueDocument: vueDocumentTheme,
+    },
+  },
+  defaults: {
+    global: {
+      ripple: true,
+    },
+    VBtn: {
+      rounded: 'lg',
+    },
+    VCard: {
+      rounded: 'lg',
+    },
+    VTextField: {
+      variant: 'outlined',
+      density: 'comfortable',
+      color: 'primary',
+    },
   },
 })
 

@@ -58,11 +58,17 @@ Z **katalogu głównego** monorepo:
 docker compose up -d
 ```
 
-W pliku `backend/.env.local` ustaw `DATABASE_URL` tak jak w szablonie **`backend/.env.docker.local.example`** (użytkownik `medical_app`, baza `medical_document`, hasło jak w `docker-compose.yml`). Pierwsze uruchomienie może potrwać kilka sekund — `docker compose ps` pokaże status `healthy`.
+Kontener Postgres jest skonfigurowany tak samo jak domyślne **`DATABASE_URL` w `backend/.env`** (użytkownik `app`, baza `app`, hasło `!ChangeMe!`). **Nie musisz** wtedy dodawać `.env.local` wyłącznie pod kątem bazy.
 
-Jeśli port **5432** jest już zajęty na hoście, w `docker-compose.yml` zmień wpis portów na np. `"5433:5432"` i w `DATABASE_URL` podaj `127.0.0.1:5433`.
+Pierwsze uruchomienie może potrwać kilka sekund — `docker compose ps` pokaże status `healthy`.
+
+Jeśli wcześniej uruchamiałeś starszą wersję `docker-compose` (inny użytkownik/hasło), stary wolumen nadal ma stare konto — wtedy wykonaj **`docker compose down -v`**, potem ponownie **`docker compose up -d`**, a następnie migracje i fixtures.
+
+Jeśli port **5432** jest już zajęty na hoście, w `docker-compose.yml` zmień wpis portów na np. `"5433:5432"` i w `DATABASE_URL` (np. w `.env.local`) podaj `127.0.0.1:5433`.
 
 Zatrzymanie kontenera: `docker compose down`. Usunięcie kontenera **i** danych w wolumenie: `docker compose down -v`.
+
+**Błąd `password authentication failed for user "app"`:** zwykle oznacza, że łączysz się jako `app` (domyślne `.env`), a działa inny Postgres (stary wolumen Dockera z innym użytkownikiem, albo osobna instalacja z innym hasłem). Upewnij się, że działa **ten** kontener (`docker compose ps`), ewentualnie `down -v` + `up -d`, albo dopasuj `DATABASE_URL` w `.env.local` do realnego serwera.
 
 1. Wejdź do katalogu API:
 
@@ -150,3 +156,7 @@ W backendzie bundle **NelmioCorsBundle** pozwala na żądania z `localhost` / `1
 ## Zgodność z RODO / dane osobowe
 
 Fixtures i opisy w kodzie mogą zawierać **dane fikcyjne** wyłącznie do testów. W produkcji stosuj polityki retencji, logowanie dostępu, umowy powierzenia i minimalizację danych zgodnie z prawem.
+
+## Licencja
+
+Copyright (c) 2026 **Maxsoft**. Kod udostępniony na licencji **MIT** — pełny tekst w pliku [`LICENSE`](LICENSE) w katalogu głównym repozytorium.

@@ -45,8 +45,10 @@ final class MeProvider implements ProviderInterface
             $profile = $this->patientProfileRepository->findOneBy(['user' => $user]);
             if ($profile instanceof PatientProfile) {
                 $me->patientProfile = [
+                    'id' => (int) $profile->getId(),
                     'firstName' => (string) $profile->getFirstName(),
                     'lastName' => (string) $profile->getLastName(),
+                    'birthDate' => $profile->getBirthDate()?->format('Y-m-d'),
                 ];
                 $prescriptions = $this->prescriptionRepository->findBy(
                     ['patientProfile' => $profile],
@@ -74,9 +76,11 @@ final class MeProvider implements ProviderInterface
                 }
                 $patientUser = $p->getUser();
                 $me->patients[] = [
+                    'id' => (int) $p->getId(),
                     'firstName' => (string) $p->getFirstName(),
                     'lastName' => (string) $p->getLastName(),
                     'patientEmail' => $patientUser ? (string) $patientUser->getEmail() : '',
+                    'birthDate' => $p->getBirthDate()?->format('Y-m-d'),
                 ];
             }
         }

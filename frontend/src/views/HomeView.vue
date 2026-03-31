@@ -1,17 +1,18 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
-const me = ref(null)
 const loadError = ref('')
 const loading = ref(true)
 
+const me = computed(() => auth.me)
+
 onMounted(async () => {
   try {
-    me.value = await auth.fetchMe()
+    await auth.loadMe()
   } catch (e) {
     loadError.value = e.response?.data?.detail || e.message || 'Could not load profile'
   } finally {
@@ -36,8 +37,8 @@ function signOut() {
         class="d-flex align-center justify-space-between flex-wrap gap-2"
       >
         <div>
-          <h1 class="text-h5">
-            Dashboard
+          <h1 class="text-h5 font-weight-medium">
+            <span class="text-primary">Dashboard</span>
           </h1>
           <p
             v-if="me"
@@ -46,13 +47,24 @@ function signOut() {
             {{ me.email }}
           </p>
         </div>
-        <v-btn
-          variant="tonal"
-          color="secondary"
-          @click="signOut"
-        >
-          Sign out
-        </v-btn>
+        <div class="d-flex flex-wrap gap-2">
+          <v-btn
+            v-if="auth.isDoctor"
+            color="primary"
+            variant="flat"
+            prepend-icon="mdi-account-group"
+            to="/patients"
+          >
+            Manage patients
+          </v-btn>
+          <v-btn
+            variant="tonal"
+            color="primary"
+            @click="signOut"
+          >
+            Sign out
+          </v-btn>
+        </div>
       </v-col>
     </v-row>
 
@@ -76,8 +88,13 @@ function signOut() {
           cols="12"
           md="6"
         >
-          <v-card>
-            <v-card-title>Account</v-card-title>
+          <v-card
+            variant="outlined"
+            class="border-opacity-25"
+          >
+            <v-card-title class="text-primary">
+              Account
+            </v-card-title>
             <v-card-text>
               <div><strong>Roles:</strong> {{ me.roles?.join(', ') }}</div>
             </v-card-text>
@@ -89,10 +106,21 @@ function signOut() {
           cols="12"
           md="6"
         >
-          <v-card>
-            <v-card-title>Your profile</v-card-title>
+          <v-card
+            variant="outlined"
+            class="border-opacity-25"
+          >
+            <v-card-title class="text-primary">
+              Your profile
+            </v-card-title>
             <v-card-text>
-              {{ me.patientProfile.firstName }} {{ me.patientProfile.lastName }}
+              <div>{{ me.patientProfile.firstName }} {{ me.patientProfile.lastName }}</div>
+              <div
+                v-if="me.patientProfile.birthDate"
+                class="text-medium-emphasis text-body-2 mt-2"
+              >
+                Date of birth: {{ me.patientProfile.birthDate }}
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -100,8 +128,13 @@ function signOut() {
 
       <v-row v-if="me.prescriptions?.length">
         <v-col cols="12">
-          <v-card>
-            <v-card-title>Your prescriptions</v-card-title>
+          <v-card
+            variant="outlined"
+            class="border-opacity-25"
+          >
+            <v-card-title class="text-primary">
+              Your prescriptions
+            </v-card-title>
             <v-data-table
               :items="me.prescriptions"
               :headers="[
@@ -120,19 +153,47 @@ function signOut() {
 
       <v-row v-if="me.patients?.length">
         <v-col cols="12">
-          <v-card>
-            <v-card-title>Your patients</v-card-title>
+          <v-card
+            variant="outlined"
+            class="border-opacity-25"
+          >
+            <v-card-title class="text-primary d-flex align-center justify-space-between flex-wrap gap-2">
+              <span>Your patients</span>
+              <v-btn
+                size="small"
+                color="primary"
+                variant="tonal"
+                to="/patients"
+              >
+                Full CRUD
+              </v-btn>
+            </v-card-title>
             <v-data-table
               :items="me.patients"
               :headers="[
                 { title: 'First name', key: 'firstName' },
                 { title: 'Last name', key: 'lastName' },
-                { title: 'Patient email', key: 'patientEmail' },
+                { title: 'Birth date', key: 'birthDate' },
+                { title: 'Email', key: 'patientEmail' },
+                { title: '', key: 'actions', sortable: false, align: 'end' },
               ]"
-              item-value="patientEmail"
+              item-value="id"
               class="elevation-0"
               density="comfortable"
-            />
+            >
+              <template #[`item.birthDate`]="{ item }">
+                {{ item.birthDate || '—' }}
+              </template>
+              <template #[`item.actions`]="{ item }">
+                <v-btn
+                  :to="{ name: 'patient-edit', params: { id: String(item.id) } }"
+                  icon="mdi-pencil"
+                  variant="text"
+                  size="small"
+                  aria-label="Edit patient"
+                />
+              </template>
+            </v-data-table>
           </v-card>
         </v-col>
       </v-row>

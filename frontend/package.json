@@ -2,6 +2,8 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
+  "license": "MIT",
+  "author": "Maxsoft",
   "type": "module",
   "scripts": {
     "dev": "vite",

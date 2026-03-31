@@ -52,6 +52,7 @@ final class AppFixtures extends Fixture
             ->setUser($patient1)
             ->setFirstName('Jan')
             ->setLastName('Kowalski')
+            ->setBirthDate(new DateTimeImmutable('1988-03-15'))
             ->addDoctor($doctor)
             ->addDoctor($doctor2);
 
@@ -59,6 +60,7 @@ final class AppFixtures extends Fixture
             ->setUser($patient2)
             ->setFirstName('Anna')
             ->setLastName('Nowak')
+            ->setBirthDate(new DateTimeImmutable('1995-11-02'))
             ->addDoctor($doctor);
 
         $manager->persist($profile1);

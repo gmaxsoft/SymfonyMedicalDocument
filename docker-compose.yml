@@ -1,17 +1,21 @@
+# Te same wartości co domyślne DATABASE_URL w backend/.env (użytkownik app, baza app).
+# Jeśli wcześniej uruchamiałeś starszą wersję compose (medical_app), wykonaj:
+#   docker compose down -v
+#   docker compose up -d
 services:
   postgres:
     image: postgres:16-alpine
     container_name: medical_document_postgres
     environment:
-      POSTGRES_USER: medical_app
-      POSTGRES_PASSWORD: medical_dev_secret
-      POSTGRES_DB: medical_document
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: '!ChangeMe!'
+      POSTGRES_DB: app
     ports:
       - "5432:5432"
     volumes:
       - medical_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U medical_app -d medical_document"]
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
       interval: 5s
       timeout: 5s
       retries: 8

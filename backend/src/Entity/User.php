@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Deprecated;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -93,7 +92,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[Deprecated(message: 'Symfony 7.3+: empty implementation; credentials are not stored on the user object.')]
     public function eraseCredentials(): void
     {
     }
