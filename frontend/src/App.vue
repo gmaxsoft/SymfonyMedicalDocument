@@ -15,7 +15,7 @@ const route = useRoute()
         E-Prescription
       </v-app-bar-title>
     </v-app-bar>
-    <v-main>
+    <v-main :class="{ 'pa-0': route.name === 'login' }">
       <router-view />
     </v-main>
   </v-app>

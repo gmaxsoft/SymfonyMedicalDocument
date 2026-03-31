@@ -13,6 +13,7 @@ Monorepo łączące backend API (Symfony + API Platform) z panelem klienckim (Vu
 
 ```
 SymfonyMedicalDocument/
+├── docker-compose.yml   # PostgreSQL 16 (opcjonalnie — dev na Windowsie / bez lokalnego Postgresa)
 ├── backend/          # Symfony 7 — API, bezpieczeństwo, Doctrine, migracje
 │   ├── config/       # Konfiguracja (security, API Platform, JWT, Doctrine, …)
 │   ├── migrations/   # Migracje bazy PostgreSQL
@@ -39,7 +40,8 @@ SymfonyMedicalDocument/
 
 - **PHP** 8.3+ z rozszerzeniami wymaganymi przez Symfony/Doctrine (m.in. `ctype`, `iconv`, `pdo_pgsql`).
 - **Composer** 2.x.
-- **PostgreSQL** (np. 16) — dostępna baza i użytkownik zgodny z `DATABASE_URL`.
+- **PostgreSQL** (np. 16) — lokalnie albo w **Dockerze** (`docker-compose.yml` w katalogu głównym); connection string w `DATABASE_URL`.
+- **Docker** (opcjonalnie) — tylko jeśli uruchamiasz bazę przez `docker compose`, np. na Windowsie bez zainstalowanego PostgreSQL.
 - **Node.js** 20+ (lub 18 LTS) oraz **npm** — dla `frontend/`.
 - Do generowania par kluczy JWT (opcjonalnie na nowym komputerze): **OpenSSL** (np. z Git for Windows: `C:\Program Files\Git\usr\bin\openssl.exe`) lub polecenie `php bin/console lexik:jwt:generate-keypair` w środowisku, w którym OpenSSL działa poprawnie.
 
@@ -47,6 +49,20 @@ SymfonyMedicalDocument/
 > `composer install --ignore-platform-req=ext-redis`
 
 ## Konfiguracja i uruchomienie — backend
+
+### PostgreSQL w Dockerze (np. Windows bez lokalnego serwera)
+
+Z **katalogu głównego** monorepo:
+
+```bash
+docker compose up -d
+```
+
+W pliku `backend/.env.local` ustaw `DATABASE_URL` tak jak w szablonie **`backend/.env.docker.local.example`** (użytkownik `medical_app`, baza `medical_document`, hasło jak w `docker-compose.yml`). Pierwsze uruchomienie może potrwać kilka sekund — `docker compose ps` pokaże status `healthy`.
+
+Jeśli port **5432** jest już zajęty na hoście, w `docker-compose.yml` zmień wpis portów na np. `"5433:5432"` i w `DATABASE_URL` podaj `127.0.0.1:5433`.
+
+Zatrzymanie kontenera: `docker compose down`. Usunięcie kontenera **i** danych w wolumenie: `docker compose down -v`.
 
 1. Wejdź do katalogu API:
 
@@ -68,12 +84,14 @@ SymfonyMedicalDocument/
 
    Plik **`private.pem` nie powinien trafiać do repozytorium** (jest w `.gitignore` w `config/jwt/`). Na nowej maszynie wygeneruj parę kluczy ponownie lub skopiuj ją bezpiecznym kanałem.
 
-4. Utwórz schemat bazy i (opcjonalnie) załaduj dane testowe:
+4. Utwórz schemat bazy (**migracje** są w `backend/migrations/`) i załaduj **konta demo** oraz przykładowe recepty i historię:
 
    ```bash
    php bin/console doctrine:migrations:migrate --no-interaction
    php bin/console doctrine:fixtures:load --no-interaction
    ```
+
+   Flaga `--no-interaction` powoduje wyczyszczenie tabel i ponowne załadowanie fixtures bez pytania (wygodne w dev). Każde ponowne uruchomienie nadpisuje dane demo.
 
 5. Uruchom serwer HTTP (przykład — wbudowany router PHP na porcie 8000):
 
@@ -89,10 +107,11 @@ SymfonyMedicalDocument/
 - `GET /api/me` — nagłówek `Authorization: Bearer <token>`; zwraca dane konta, profil pacjenta i/lub listy (recepty / pacjenci w zależności od roli).
 - Pozostałe zasoby API Platform pod prefiksem `/api/` (np. recepty, profile pacjentów) — szczegóły w dokumentacji interaktywnej API Platform (np. `/api` w formacie HTML/OpenAPI, zależnie od konfiguracji).
 
-**Konta z fixtures** (hasło dla wszystkich: `password`):
+**Konta demo z fixtures** (hasło dla wszystkich: `password`):
 
-- `doctor@example.com`, `doctor2@example.com` — role lekarzy  
-- `patient1@example.com`, `patient2@example.com` — role pacjentów  
+- `doctor@example.com`, `doctor2@example.com` — lekarze (widzą przypisanych pacjentów w `/api/me`).
+- `patient1@example.com` (Jan Kowalski) — 2 lekarzy w obsadzie, **2 aktywne recepty**, **2 wpisy historii**.
+- `patient2@example.com` (Anna Nowak) — 1 lekarz, **2 recepty** (jedna `used`, jedna `active`), **1 wpis historii**.
 
 ## Konfiguracja i uruchomienie — frontend
 

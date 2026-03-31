@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medical_document_postgres
+    environment:
+      POSTGRES_USER: medical_app
+      POSTGRES_PASSWORD: medical_dev_secret
+      POSTGRES_DB: medical_document
+    ports:
+      - "5432:5432"
+    volumes:
+      - medical_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medical_app -d medical_document"]
+      interval: 5s
+      timeout: 5s
+      retries: 8
+
+volumes:
+  medical_pgdata:

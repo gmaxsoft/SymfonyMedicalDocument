@@ -81,6 +81,55 @@ final class AppFixtures extends Fixture
 
         $manager->persist($rx1);
 
+        $issued2 = new DateTimeImmutable('-2 days');
+        $valid2 = $issued2->modify('+14 days');
+
+        $rx2 = (new Prescription())
+            ->setPatientProfile($profile1)
+            ->setIssuedBy($doctor2)
+            ->setMedications([
+                ['name' => 'Ibuprofen', 'dosage' => '200 mg', 'instructions' => '1 tablet every 8 h if pain persists'],
+                ['name' => 'Electrolytes', 'dosage' => '1 sachet', 'instructions' => 'Dissolve in water, after diarrhoea'],
+            ])
+            ->setInstructions('Short course; discontinue if symptoms worsen (demo data).')
+            ->setStatus(PrescriptionStatus::ACTIVE)
+            ->setIssuedAt($issued2)
+            ->setValidUntil($valid2)
+            ->setVerificationToken(Prescription::generateVerificationToken());
+
+        $manager->persist($rx2);
+
+        $issued3 = new DateTimeImmutable('-60 days');
+        $valid3 = $issued3->modify('+30 days');
+
+        $rx3 = (new Prescription())
+            ->setPatientProfile($profile2)
+            ->setIssuedBy($doctor)
+            ->setMedications([
+                ['name' => 'Amoxicillin', 'dosage' => '500 mg', 'instructions' => '1 capsule 3× daily for 7 days'],
+            ])
+            ->setInstructions('Complete the full course even if you feel better (demo).')
+            ->setStatus(PrescriptionStatus::USED)
+            ->setIssuedAt($issued3)
+            ->setValidUntil($valid3)
+            ->setVerificationToken(Prescription::generateVerificationToken());
+
+        $manager->persist($rx3);
+
+        $rx4 = (new Prescription())
+            ->setPatientProfile($profile2)
+            ->setIssuedBy($doctor)
+            ->setMedications([
+                ['name' => 'Vitamin D3', 'dosage' => '2000 IU', 'instructions' => 'Once daily with breakfast'],
+            ])
+            ->setInstructions('Supplementation during winter months — demo entry.')
+            ->setStatus(PrescriptionStatus::ACTIVE)
+            ->setIssuedAt(new DateTimeImmutable('-7 days'))
+            ->setValidUntil((new DateTimeImmutable('-7 days'))->modify('+90 days'))
+            ->setVerificationToken(Prescription::generateVerificationToken());
+
+        $manager->persist($rx4);
+
         $history1 = (new MedicalHistory())
             ->setPatientProfile($profile1)
             ->setRecordedBy($doctor)
@@ -89,6 +138,24 @@ final class AppFixtures extends Fixture
             ->setRecordedAt(new DateTimeImmutable('-10 days'));
 
         $manager->persist($history1);
+
+        $history2 = (new MedicalHistory())
+            ->setPatientProfile($profile1)
+            ->setRecordedBy($doctor2)
+            ->setTitle('Follow-up — blood pressure')
+            ->setDescription('Demo: BP 128/82 mmHg, lifestyle counselling documented.')
+            ->setRecordedAt(new DateTimeImmutable('-3 days'));
+
+        $manager->persist($history2);
+
+        $history3 = (new MedicalHistory())
+            ->setPatientProfile($profile2)
+            ->setRecordedBy($doctor)
+            ->setTitle('Seasonal allergy visit')
+            ->setDescription('Demo: symptomatic rhinitis; education materials provided (fictional).')
+            ->setRecordedAt(new DateTimeImmutable('-14 days'));
+
+        $manager->persist($history3);
 
         $manager->flush();
     }
