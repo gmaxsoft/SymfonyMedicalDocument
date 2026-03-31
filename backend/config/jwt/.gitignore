@@ -1,0 +1,2 @@
+# Never commit private keys; public.pem may be committed for verification-only workflows.
+/private.pem

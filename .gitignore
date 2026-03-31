@@ -1,0 +1,3 @@
+# Repozytorium korzeniowe — szczegółowe reguły: backend/.gitignore, frontend/.gitignore
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+# Krótki opis zmian (do ~72 znaków w pierwszej linii).
+#
+# Konwencja: bezosobowy czas przeszły (np. „Dodano…”, „Zmieniono…”, „Usunięto…”).
+# Dobrze:  Dodano endpoint rejestracji użytkownika
+# Źle:     Dodaj endpoint / Zmień konfigurację / Usuń stary kod
+#
+# Opcjonalnie poniżej pustą linię i uzasadnienie (body).
