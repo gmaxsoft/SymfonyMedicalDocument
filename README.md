@@ -30,14 +30,14 @@ SymfonyMedicalDocument/
 
 | Warstwa | Technologie |
 |--------|-------------|
-| Backend | PHP 8.2+, **Symfony 7.4**, **API Platform 3.x** (rdzeń 3.4.x), Doctrine ORM 3, PostgreSQL |
+| Backend | PHP 8.3+, **Symfony 7.4**, **API Platform 3.x** (rdzeń 3.4.x), Doctrine ORM 3, PostgreSQL |
 | Bezpieczeństwo | Symfony Security, **LexikJWTAuthenticationBundle**, voterzy (np. recepta / historia), filtrowanie kolekcji (lekarz/pacjent) |
 | Frontend | **Vue 3** (Composition API), **Vite**, **Vuetify 3**, **Pinia**, **Axios**, **Vue Router** |
 | Narzędzia | Composer, npm, migracje Doctrine, fixtures (środowisko deweloperskie) |
 
 ## Wymagania wstępne
 
-- **PHP** 8.2+ z rozszerzeniami wymaganymi przez Symfony/Doctrine (m.in. `ctype`, `iconv`, `pdo_pgsql`).
+- **PHP** 8.3+ z rozszerzeniami wymaganymi przez Symfony/Doctrine (m.in. `ctype`, `iconv`, `pdo_pgsql`).
 - **Composer** 2.x.
 - **PostgreSQL** (np. 16) — dostępna baza i użytkownik zgodny z `DATABASE_URL`.
 - **Node.js** 20+ (lub 18 LTS) oraz **npm** — dla `frontend/`.
